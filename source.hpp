@@ -5,9 +5,9 @@
 #include "string"
 #include "typeEnums.h"
 
-struct Node {
+typedef struct node {
         virtual std::string printNode();
-};
+} Node;
 
 class Type : public Node {
     TypeNameEnum name;

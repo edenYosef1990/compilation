@@ -8,8 +8,6 @@
 
 void showToken(char *);
 
-#define YYSTYPE Node*
-
 
 %}
 
