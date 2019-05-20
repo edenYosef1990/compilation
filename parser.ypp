@@ -1,0 +1,124 @@
+%{
+	#include "source.hpp"
+	#include <iostream>
+	#include <stdlib.h>
+
+	using namespace std;
+
+	int yylex();
+	int yyerror(char * message);
+    #define YYSTYPE Node*
+%}
+
+%token VOID
+%token INT
+%token BYTE
+%token B
+%token BOOL
+%left AND
+%left OR
+%right NOT
+%token TRUE
+%token FALSE
+%token RETURN
+%token IF
+
+%nonassoc "then"
+%nonassoc ELSE
+
+%token WHILE
+%token BREAK
+%token CONTINUE
+%token PRECOND
+%token SC
+%token COMMA
+%right LPAREN RPAREN
+%right LBRACE RBRACE
+%left ASSIGN
+%left  RELOP
+%left  BINOP
+%token ID
+%token NUM
+%token STRING
+
+
+%%
+
+Program  : 
+    Funcs 
+;
+Funcs : 
+    /*epsilon*/ | FuncDecl Funcs 
+;
+FuncDecl :
+    RetType ID LPAREN Formals RPAREN PreConditions LBRACE Statements RBRACE 
+;
+RetType : 
+    Type | VOID
+;
+Formals : 
+    /*epsilon*/ | FormalsList
+;
+FormalsList : 
+    FormalDecl | FormalDecl COMMA FormalsList
+;
+FormalDecl : 
+    Type ID
+;
+PreConditions : 
+    /*epsilon*/ | PreConditions PreCondition
+;
+PreCondition : 
+	PRECOND LPAREN Exp RPAREN
+;
+Statements : 
+    Statement | Statements Statement
+;
+Statement : 
+    LBRACE Statements RBRACE | 
+    Type ID SC | 
+    Type ID ASSIGN Exp SC | 
+    ID ASSIGN Exp SC | 
+    IF LPAREN Exp RPAREN Statement %prec "then" |
+    IF LPAREN Exp RPAREN Statement ELSE Statement |
+    WHILE LPAREN Exp RPAREN Statement |
+    BREAK SC | CONTINUE SC
+;
+
+Call :
+    ID LPAREN ExpList RPAREN |
+    ID LPAREN RPAREN 
+;
+ExpList :
+    Exp COMMA ExpList | Exp
+;
+Type :
+    INT | BYTE | BOOL
+;
+Exp :
+    ID |
+    Call |
+    NUM |
+    NUM B |
+    STRING |
+    TRUE |
+    FALSE |
+	Exp AND Exp |
+    Exp OR Exp |
+    Exp RELOP Exp |
+    NOT Exp
+;
+
+
+%%
+
+int main()
+{
+	yyparse();
+}
+
+int yyerror(char * message)
+{
+	cout<<"Parse error: "<<message<<endl;
+	exit(0);
+}
