@@ -5,9 +5,10 @@
 
 	using namespace std;
 
+    #define YYSTYPE Node*
 	int yylex();
 	int yyerror(char * message);
-    #define YYSTYPE Node*
+    
 %}
 
 %token VOID
